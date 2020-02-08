@@ -63,10 +63,30 @@ class SearchReposViewModel(
 
     fun onSearchClick(){
 
-        getUserRepos(userInput.get().orEmpty())
+        //getUserRepos(userInput.get().orEmpty())
+        getRepoName(userInput.get().orEmpty())
+
 
     }
-    
+
+    fun getRepoName(name:String ){
+        viewModelScope.launch {
+            val repoList =ArrayList<Repo>()
+            userRepoRepository.getRepoByName(name)?.forEach{
+                repoList.add(
+                    Repo(
+                        url =it.url.orEmpty(),
+                        name= it.name.orEmpty(),
+                        description = it.description.orEmpty()
+                    )
+                )
+            }
+            repoMutableLiveData.value=repoList
+
+        }
+    }
+
+
     fun getDataRepoFromMediator(){
         userRepoRepository.allRepo?.let {
             repoMediator.addSource(it,{
